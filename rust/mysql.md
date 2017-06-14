@@ -18,7 +18,7 @@ mysql_asyncに比べるとsslサポートとかjsonが使えるなどがある�
 tokioのイベントループと組み合わせて使うような実装になってるクライアントライブラリ、こちらもlow-levelな実装。
 rust-mysql-simpleと同じ作者が作ってるが、これらのライブラリは共有する実装がないようだ。
 非同期前提って感じになるけど、v0.11以降のhyperとreactorとか共有できるか調べたほうがよさそう。
-rust-mysql-simple同様mysql_asyncは自前でコネクションプール持つので自前で用意する必要はない。
+rust-mysql-simple同様mysql_async自体でコネクションプール持つので自前で用意する必要はない。
 
 ## mysqlclient-sys
 
