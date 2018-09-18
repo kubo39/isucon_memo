@@ -22,11 +22,14 @@ vibe.d前提なので、ドライバの選定もそれを踏まえたものに�
 
 調査している時点での最新版は 2.2.2。
 
-- prepared statementは使える
+- prepared statementを使える
+  - prepared statementはクエリのパースを毎回行う必要がないのでパフォーマンス向上が期待できる
+  - コネクションプールとの併用はmysql-native側でうまいことやってくれてる
+    - コネクション側でハンドルを管理してよしなにregister/releaseしてる
 - Vibe.dのソケットとPhobosのソケットの両方に対応している、デフォルトだとVibe.dのソケットを使う
 - 自前でコネクションプールをもっている
   - 基本的にはここから `lockConnection` でDBサーバと通信を行う
-    - 再接続などもよしなにやってくれる
+    - 再接続などもよしなにやってくれるので基本これを使うべき
   - 最大同時接続数は `maxCurrency` で変更可能
 - selectクエリの結果は `ResultRange` というrangeが返り、 `array` で `Row` の配列に変換できる
   - ResultRange / Row ともにデフォルトだとVariantとして扱う必要がある
