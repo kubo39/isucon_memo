@@ -1,13 +1,38 @@
 # HTTPサーバ
 
-標準ライブラリのHTTPサーバを使う。httpserver,asynchttpserverの2つ用意してる。
+調査時点のNimのバージョンは安定版が 0.18.0, 開発版として 0.18.1とバージョニングされているものがあるが特にタグはないのでそのときの最新版を使うことになる。
 
-## httpserver
+たぶん非同期I/Oが前提となるので, それ前提でMySQLドライバなどのライブラリ選定を行うことになる
 
-`import httpserver` で使える。使いどころがわからん。
+## HTTPサーバ
 
-## asynchttpserver
+### httpserver
 
-`import asynchttpserver` で使える。
-コアの部分はasyncdispatchとselectorsに書いてる。selectorsモヂュールみたほうが雰囲気はわかるかと。
-[jester](https://github.com/dom96/jester) はこっちベースなのでこっちがデファクトっぽい。
+標準ライブラリにある
+
+- `import httpserver` で使える
+- 使いどころがわからん
+
+### asynchttpserver
+
+標準ライブラリにある
+
+- `import asynchttpserver` で使える
+- コアの部分はasyncdispatchとselectorsに書いてる
+  - selectorsモヂュールみたほうが雰囲気はわかるかと
+
+### httpbeast
+
+調査時点でのバージョンは 0.2.0
+
+- 後述のjesterはこれベース
+
+## フレームワーク
+
+### jester
+
+調査時点でのバージョンは 0.4.1
+
+- 0.18.1以上を要求するので調査時点では安定版では使えない
+- 非同期I/O前提
+- シンプルなルーティング
