@@ -21,8 +21,10 @@
 - SSL対応
   - OpenSSL(default) or Botan
   - SubConfigurationで無効化可能
+- セッション
+  - オンメモリ or Redisをセッションストアとして使う仕組みを持ってる
 - テンプレートエンジン
   - diet-ngというライブラリ
 - ユーティリティ
   - MimeType
-  - urlencoded / multipart/form-data
+  - urlencoded, multipart/form-data
