@@ -10,21 +10,23 @@
 
 ## MySQLドライバ
 
-vibe.d前提なので、ドライバの選定もそれを踏まえたものになる。
+HTTPサーバがvibe.d前提なので、ドライバの選定もそれを踏まえたものになる。
 
 - [mysql-native](https://github.com/mysql-d/mysql-native)
 - [mysql-lited](https://github.com/eBookingServices/mysql-lited)
 
-どちらもVibeSocket前提かつコネクションプールを自前で持つ実装になってるが、mysql-litedのほうがAPI的に使いやすい感(個人の感想です)。
+どちらもVibeSocket前提かつコネクションプールを自前で持つ実装になっている。
+mysql-nativeのほうがメンテナンスは活発(最終コミットは2019.12だが、、)なのでこちらを軸に考える。
 単に非同期I/Oなだけでなく、EAGAINとかのときにFiberで実行主体が切り替わるのがミソなので、コアがvibe.dのリアクターでないと意味がない。
 
 ## mysql-native
 
-調査している時点での最新版は 2.2.2。
+調査している時点でのバージョンは 3.0.0。
 
-- vibe.dのソケットとPhobosのソケットの両方に対応している、デフォルトでvibe.dを使っているプロジェクトを判別してvibe.dのソケットを使うようになっている
+- vibe.dのソケットとPhobosのソケットの両方に対応しており、デフォルトでvibe.dを使っているプロジェクトを判別してvibe.dのソケットを使うようになっている
   - `"versions": ["Have_vibe_d_core"]` で強制的に指定することもできる
 - prepared statementを使える
+  - SQLインジェクション対策
   - prepared statementはクエリのパースを毎回行う必要がないのでパフォーマンス向上が期待できる
   - コネクションプールとの併用はmysql-native側でうまいことやってくれてる
     - コネクション側でハンドルを管理してよしなにregister/releaseしてる
@@ -32,7 +34,14 @@ vibe.d前提なので、ドライバの選定もそれを踏まえたものに�
   - といってもコネクションプールの部分はvibe.dのジェネリックな実装の上になってる
   - 基本的にはここから `lockConnection` でDBサーバと通信を行う
     - 再接続などもよしなにやってくれるので基本これを使うべき
-  - 最大同時接続数は `maxCurrency` で変更可能
-- selectクエリの結果は `ResultRange` というrangeが返り、 `array` で `Row` の配列に変換できる
-  - ResultRange / Row ともにデフォルトだとVariantとして扱う必要がある
-  - Row は `toStruct` で構造体に変換できる
+  - 最大同時接続数は `maxConcurrency` で変更可能
+    - デフォルトではuint.max
+- MySQL 8.0の新しいユーザ認証に対応していない
+  - MySQL 8.0ではデフォルトのユーザ認証プラグインがCachingSha2Passwordになったがこれに対応していない
+- SSL対応していない
+  - 前述のCachingSha2Passwordで通信するときにTLS通信が推奨されるが使えない
+- そもそも認証が`mysql_native_password`にハードコードされている
+  - 設定で認証外すこともできない
+- 255バイトを超える認証レスポンスが使えない
+- `CLIENT_SESSION_TRACK`に対応していない
+  - `SERVER_SESSION_STATE_CHANGED`をとる方法がない
