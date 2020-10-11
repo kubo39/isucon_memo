@@ -21,10 +21,10 @@
 ## ISOLATION LEVEL (やらない?)
 
 - トランザクション分離レベル
-    - Repeatable Read: デフォルト、トランザクション開始時にコミットされたデータのみみえる
-    - Read Commited: 他のトランザクションのコミットされたデータがみえる
-    - Read Uncommited: 他のトランザクションのコミットされていないデータがみえる
-    - Serializable: すべてのselectを直列化して競合が発生しないように
+  - Repeatable Read: デフォルト、トランザクション開始時にコミットされたデータのみみえる
+  - Read Commited: 他のトランザクションのコミットされたデータがみえる
+  - Read Uncommited: 他のトランザクションのコミットされていないデータがみえる
+  - Serializable: すべてのselectを直列化して競合が発生しないように
   - 詳しくはMySQL公式ドキュメントのSET TRANSACTIONを調べること
 
 ## ACCESS MODE (やらない?)
