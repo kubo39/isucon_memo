@@ -38,6 +38,7 @@ mysql-nativeのほうがメンテナンスは活発(最終コミットは2019.12
     - デフォルトではuint.max
 - MySQL 8.0の新しいユーザ認証に対応していない
   - MySQL 8.0ではデフォルトのユーザ認証プラグインがCachingSha2Passwordになったがこれに対応していない
+  - 仮にMySQL 8で出題された場合my.cnfの設定ファイルを修正する必要がある
 - SSL対応していない
   - 前述のCachingSha2Passwordで通信するときにTLS通信が推奨されるが使えない
 - そもそも認証が`mysql_native_password`にハードコードされている
