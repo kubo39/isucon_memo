@@ -33,6 +33,8 @@ bulk insertが書きづらいためこちらを使うほうがよさそう。
 
 READMEやテストにはないが、複数のカラムをINSERTしたい場合はタブで連結すればよい。
 
+タブはデフォルトの設定に過ぎないのでたとえば,(カンマ)が使いたければ `LOAD DATA LOCAL FILE 'filename' INTO TABLE tbl FIELDS TERMINATED BY ','` などFIELDS句で指定することもできる。
+
 ```rust
 use std::io::Write;
 use mysql::*;
