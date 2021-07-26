@@ -8,7 +8,7 @@ RustのMySQLドライバはいくつかある
 
 ## rust-mysql-simple
 
-調査時点でのバージョンは 20.0.1。
+調査時点でのバージョンは 21.0.1。(2021/07/26)
 
 - low-levelなクライアントライブラリ
 - ネットワークまわりでいうと、libmysqlclientとかと違ってノンブロッキングI/Oを使うことは選択できそうだが、コアのイベントループとかの連携とか別に考えてやる必要がある
@@ -26,6 +26,12 @@ RustのMySQLドライバはいくつかある
     - オフにしたい場合は `use_cache(false)`
 - sslサポートとかjsonが使えるなどがあるが、isuconだとあまりこういった機能の出番はなさそう
   - と思ったがMySQL 8のデフォルトの認証の`caching_sha2_password`はTLSサポートのほうが認証は速くできる
+  - まあそもそも認証を切ってしまうほうがいいかも
+- UNIXドメインソケットが使える
+- TCP nodelayが使える
+- ソフトリセット(`COM_RESET_CONNECTION`)に対応
+- パケットの圧縮はzlibのみ
+  - zstdは未サポート
 
 ### LOAD DATA LOCAL INFILE
 
