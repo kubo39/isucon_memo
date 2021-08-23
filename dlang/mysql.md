@@ -25,7 +25,7 @@ mysql-nativeのほうがメンテナンスは活発なのでこちらを軸に�
 
 - 簡単なコード例
 
-```
+```d
 import std.algorithm : map;
 import std.array : array;
 import mysql;
