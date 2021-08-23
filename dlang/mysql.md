@@ -16,12 +16,65 @@ HTTPサーバがvibe.d前提なので、ドライバの選定もそれを踏ま�
 - [mysql-lited](https://github.com/eBookingServices/mysql-lited)
 
 どちらもVibeSocket前提かつコネクションプールを自前で持つ実装になっている。
-mysql-nativeのほうがメンテナンスは活発(最終コミットは2019.12だが、、)なのでこちらを軸に考える。
+mysql-nativeのほうがメンテナンスは活発なのでこちらを軸に考える。
 単に非同期I/Oなだけでなく、EAGAINとかのときにFiberで実行主体が切り替わるのがミソなので、コアがvibe.dのリアクターでないと意味がない。
 
 ## mysql-native
 
 調査している時点でのバージョンは 3.0.2。(2021/07/25時点)
+
+- 簡単なコード例
+
+```
+import std.algorithm : map;
+import std.array : array;
+import mysql;
+
+struct Payment
+{
+    int customerId;
+    int amount;
+    string accountName;
+}
+
+void main()
+{
+    auto conn = new Connection("host=127.0.0.1;port=3307;user=testuser;pwd=testpassword;db=testdb");
+    scope (exit) conn.close;
+
+    conn.exec(`CREATE TEMPORARY TABLE payment (
+      customer_id int not null,
+      amount int not null,
+      account_name text
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+
+    Payment[] payments = [
+        { customerId: 1, amount: 2, accountName: null },
+        { customerId: 3, amount: 4, accountName: "foo" },
+        { customerId: 5, amount: 6, accountName: null },
+        { customerId: 7, amount: 8, accountName: null },
+        { customerId: 9, amount: 10, accountName: "bar" }
+        ];
+
+    foreach (payment; payments)
+    {
+        conn.exec(`INSERT INTO payment (customer_id, amount, account_name)
+          VALUES (?, ?, ?)
+        `, payment.customerId, payment.amount, payment.accountName);
+    }
+
+    static Payment queryMapping(Row row)
+    {
+        Payment payment;
+        row.toStruct(payment);
+        return payment;
+    }
+    const selectedPayments = conn.query(`SELECT customer_id, amount, account_name FROM payment`)
+        .map!queryMapping
+        .array;
+    assert(payments == selectedPayments);
+}
+```
 
 - vibe.dのソケットとPhobosのソケットの両方に対応しており、デフォルトでvibe.dを使っているプロジェクトを判別してvibe.dのソケットを使うようになっている
   - `"versions": ["Have_vibe_d_core"]` で強制的に指定することもできる
@@ -41,8 +94,8 @@ mysql-nativeのほうがメンテナンスは活発(最終コミットは2019.12
 - MySQL 8.0の新しいユーザ認証に対応していない
   - MySQL 8.0ではデフォルトのユーザ認証プラグインがCachingSha2Passwordになったがこれに対応していない
   - 仮にMySQL 8で出題された場合my.cnfの設定ファイルを修正する必要がある
-- SSL対応していない
-  - 前述のCachingSha2Passwordで通信するときにTLS通信が推奨されるが使えない
+- SSL/TLS対応していない
+  - 問題で使われていたらmy.cnfの編集が必要になる
 - そもそも認証が`mysql_native_password`にハードコードされている
   - 設定で認証を外すこともできない
 - 255バイトを超える認証レスポンスが使えない
